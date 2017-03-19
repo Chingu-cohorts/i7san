@@ -1,0 +1,57 @@
+language: node_js
+node_js:
+- node
+services: mongodb
+cache:
+  directories:
+  - node_modules
+install:
+- npm install
+branches:
+  only:
+  - master
+  - development
+script:
+- sleep 5
+before_deploy:
+- mkdir dist
+- echo "Building client distribution."
+- cd client
+- npm i
+- npm run build
+- cd ..
+- echo "Finished building client distribution."
+- echo "Building server distribution."
+- cd server
+- npm i
+- npm run build
+- zip server.zip dist package.json .env-cmdrc .ebextensions
+- cd ..
+- echo "Finished building server distribution."
+deploy:
+- provider: elasticbeanstalk
+  skip_cleanup: true
+  zip_file: server/server.zip
+  access_key_id:
+  secret_access_key:
+  region: us-east-1
+  app: campfire-stories
+  env: projects
+  bucket_name:
+  on:
+    branch: master
+- provider: s3
+  access_key_id:
+  secret_access_key:
+  bucket:
+  skip_cleanup: true
+  region: us-east-1
+  local_dir: client/build
+  on:
+    branch: master
+notifications:
+  email:
+    recipients:
+    - your_email@gmail.com
+    on_success: always
+    on_failure: always

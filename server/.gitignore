@@ -1,0 +1,21 @@
+# Node files
+node_modules
+
+# Debug logs
+*.log*
+
+# Mac trash
+DS_STORE
+
+# Yarn versioning
+yarn.lock
+
+# Istanbul reports
+coverage
+.nyc_output
+
+# Production build
+dist
+
+# Assets
+assets
